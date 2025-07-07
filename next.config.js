@@ -1,8 +1,7 @@
 const withPWA = require("next-pwa")({
   dest: "public",
-  buildExcludes: [/app-build-manifest\.json$/], // ⬅ remove from precache
+  buildExcludes: [/app-build-manifest\.json$/],
   cacheStartUrl: true,
-  // disable: process.env.NODE_ENV === 'development',
   register: true,
   skipWaiting: true,
   runtimeCaching: [
@@ -12,7 +11,6 @@ const withPWA = require("next-pwa")({
       options: { cacheName: "captures" },
     },
     {
-      /* every HTML navigation after the first load */
       urlPattern: ({ request }) => request.mode === "navigate",
       handler: "NetworkFirst",
       options: { cacheName: "pages", networkTimeoutSeconds: 3 },
