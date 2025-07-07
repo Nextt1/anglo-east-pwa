@@ -1,5 +1,4 @@
-// lib/storage.ts
-import { set, getMany, del } from 'idb-keyval';
+// import { set } from "idb-keyval";
 
 export type ReceiptMeta = {
   id: string;
@@ -8,5 +7,4 @@ export type ReceiptMeta = {
   createdAt: string;
 };
 
-export const saveReceipt = (meta: ReceiptMeta) =>
-  set(meta.id, meta); // simple KV store
+// export const saveReceipt = (meta: ReceiptMeta) => set(meta.id, meta);

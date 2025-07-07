@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Camera } from "@/components/Camera";
 import { isBlurred } from "@/lib/blurCheck";
 import { extractShopName } from "@/lib/ocr";
-import { saveReceipt } from "@/lib/storage";
-import { v4 as uuid } from "uuid";
+// import { saveReceipt } from "@/lib/storage";
+// import { v4 as uuid } from "uuid";
 
 export default function Home() {
   const [stage, setStage] = useState<"photo" | "receipt" | "done">("photo");
@@ -23,12 +23,12 @@ export default function Home() {
     const confirmed = prompt("Detected shop name:", shopName) ?? shopName;
     setShop(confirmed);
 
-    await saveReceipt({
-      id: uuid(),
-      imgBlob: file,
-      shopName: confirmed,
-      createdAt: new Date().toISOString(),
-    });
+    // await saveReceipt({
+    //   id: uuid(),
+    //   imgBlob: file,
+    //   shopName: confirmed,
+    //   createdAt: new Date().toISOString(),
+    // });
     setStage("done");
   };
 
