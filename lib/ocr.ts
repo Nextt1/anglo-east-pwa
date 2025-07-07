@@ -6,9 +6,7 @@ export async function readReceipt(
 ): Promise<{ text: string; shopName: string | null }> {
   const worker = await createWorker(["eng"]);
 
-  const { data } = (await worker.recognize(file)) as RecognizeResult & {
-    lines?: { text: string; confidence: number; bbox: number[] }[];
-  };
+  const { data } = (await worker.recognize(file)) as RecognizeResult;
   await worker.terminate();
 
   const fullText = data.text.trim();
