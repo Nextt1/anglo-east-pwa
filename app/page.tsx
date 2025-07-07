@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Camera } from "@/components/Camera";
-import { isBlurred } from "@/lib/blurCheck";
 import { extractShopName } from "@/lib/ocr";
 // import { saveReceipt } from "@/lib/storage";
 // import { v4 as uuid } from "uuid";
@@ -11,11 +10,12 @@ export default function Home() {
   const [shop, setShop] = useState("");
 
   const handleJewelryShot = async (file: File) => {
-    if (await isBlurred(file)) {
-      alert("Photo too blurry – please retake.");
-      return;
-    }
-    setStage("receipt");
+    console.log(file);
+    // if (await isBlurred(file)) {
+    //   alert("Photo too blurry – please retake.");
+    //   return;
+    // }
+    // setStage("receipt");
   };
 
   const handleReceiptShot = async (file: File) => {
