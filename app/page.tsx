@@ -10,6 +10,7 @@ export default function Home() {
   const [receiptImg, setReceiptImg] = useState<string | null>(null);
   const [receiptTxt, setReceiptTxt] = useState<string | null>(null);
   const [shopName, setShopName] = useState<string | null>(null);
+
   const handleJewelryShot = async (file: File) => {
     setJewelryImg(URL.createObjectURL(file));
     setStage("receipt");
@@ -40,14 +41,20 @@ export default function Home() {
       {stage === "photo" && (
         <>
           <h1 className="text-xl font-semibold mb-2">Snap jewelry photo</h1>
-          <Camera onShot={handleJewelryShot} />
+          <Camera
+            onShot={handleJewelryShot}
+            options={{ runBlurCheck: true, runOcrCheck: false }}
+          />
         </>
       )}
 
       {stage === "receipt" && (
         <>
           <h1 className="text-xl font-semibold mb-2">Snap purchase receipt</h1>
-          <Camera onShot={handleReceiptShot} />
+          <Camera
+            onShot={handleReceiptShot}
+            options={{ runBlurCheck: true, runOcrCheck: true }}
+          />
         </>
       )}
 

@@ -28,10 +28,15 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 - Whole loop runs inside an OffscreenCanvas and finishes in ≈ 10 ms on modern phones; no libraries or network required.
 
-## Screenshot of Lighthouse PWA score.
+## Explanation of blur algorithm & OCR approach
 
 - We spin up a Tesseract-JS worker in the browser (createWorker(["eng"])), recognise the receipt image and grab the full plain-text transcription (data.text). 
 
 - If data.lines[] is present, we take the top-most line whose confidence ≥ 80 % as the store name; otherwise we fall back to the first all-caps line in the raw text. 
 
 - The worker is terminated immediately after use, so memory stays low, and everything works fully offline once the PWA is installed.
+
+## Screenshot of Lighthouse PWA score.
+
+![App workflow – capture, blur gate, OCR](lighthouse.png)
+

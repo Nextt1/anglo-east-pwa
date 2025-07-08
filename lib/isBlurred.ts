@@ -1,4 +1,4 @@
-export async function isBlurred(file: File, threshold = 10): Promise<boolean> {
+export async function isBlurred(file: File, threshold = 10): Promise<{isBlur: boolean; score: number}> {
   const bitmap = await createImageBitmap(file);
 
   const scale = 512 / Math.max(bitmap.width, bitmap.height);
@@ -32,5 +32,5 @@ export async function isBlurred(file: File, threshold = 10): Promise<boolean> {
   }
   const variance = (sumSq - (sum * sum) / n) / n;
   console.debug("Lap-var", variance);
-  return variance < threshold;
+  return {isBlur: variance < threshold, score: variance};
 }

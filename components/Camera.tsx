@@ -2,6 +2,7 @@
 "use client";
 
 import { isBlurred } from "@/lib/isBlurred";
+import { readReceipt } from "@/lib/ocr";
 import dynamic from "next/dynamic";
 import React, {
   useRef,
@@ -26,13 +27,29 @@ const Webcam = dynamic(
   { ssr: false }
 );
 
-export const Camera: FC<{ onShot: (file: File) => void }> = ({ onShot }) => {
+interface CameraOptions {
+  runBlurCheck: boolean;
+  runOcrCheck: boolean;
+}
+
+interface CameraProps {
+  onShot: (file: File) => void;
+  options?: CameraOptions;
+}
+
+export const Camera: FC<CameraProps> = ({ onShot, options }) => {
   const [image, setImage] = useState<string | null>(null);
   const [constraints, setConstraints] = useState<MediaStreamConstraints>({
     video: { facingMode: { ideal: "environment" } },
   });
   type WebcamHandle = InstanceType<typeof ReactWebcam>;
   const camRef = useRef<WebcamHandle | null>(null);
+  const [blurInfo, setBlurInfo] = useState<{
+    isBlur: boolean;
+    score: number;
+  }>();
+  const [text, setText] = useState("");
+  const [shopName, setShopName] = useState("");
 
   const handleError = useCallback((err: string | DOMException) => {
     if (err instanceof DOMException && err.name === "OverconstrainedError") {
@@ -44,20 +61,39 @@ export const Camera: FC<{ onShot: (file: File) => void }> = ({ onShot }) => {
     }
   }, []);
 
-  const capture = useCallback(() => {
+  const capture = async () => {
     const src = camRef.current?.getScreenshot();
-    if (src) setImage(src);
-  }, []);
+    if (!src) return;
+
+    setImage(src);
+
+    const blob = await fetch(src).then((r) => r.blob());
+    const file = new File([blob], "photo.jpg", { type: blob.type });
+
+    const _blurInfo = await isBlurred(file);
+
+    if (options?.runBlurCheck) {
+      setBlurInfo(_blurInfo);
+
+      if (_blurInfo.isBlur) {
+        alert("Too blurry – please retake 📸");
+        return;
+      }
+    }
+
+    if (options?.runOcrCheck) {
+      const _data = await readReceipt(file);
+      setShopName(_data?.shopName ?? "");
+      setText(_data.text);
+    }
+  };
 
   const confirm = async () => {
     if (!image) return;
+
     const blob = await fetch(image).then((r) => r.blob());
     const file = new File([blob], "photo.jpg", { type: blob.type });
 
-    if (await isBlurred(file)) {
-      alert("Too blurry – please retake 📸");
-      return;
-    }
     onShot(file);
     setImage(null);
   };
@@ -79,6 +115,9 @@ export const Camera: FC<{ onShot: (file: File) => void }> = ({ onShot }) => {
             alt="preview"
             className="w-full max-w-md rounded shadow"
           />
+          {options?.runBlurCheck && <span>Blur Score: {blurInfo?.score}</span>}
+          {options?.runOcrCheck && <span>Extracted Text: {text}</span>}
+          {options?.runOcrCheck && <span>Shop Name: {shopName}</span>}
           <div className="mt-4 flex gap-3">
             <button
               onClick={() => setImage(null)}
@@ -89,6 +128,7 @@ export const Camera: FC<{ onShot: (file: File) => void }> = ({ onShot }) => {
             <button
               onClick={confirm}
               className="px-4 py-2 bg-blue-600 text-white rounded"
+              disabled={blurInfo && blurInfo.isBlur}
             >
               Use photo
             </button>
